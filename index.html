@@ -1,0 +1,244 @@
+import React, { useState } from 'react';
+import { Database, Cpu, Zap, Brain, FileText, Image, Mic, MessageSquare, ArrowRight, Layers, HardDrive, Cloud } from 'lucide-react';
+
+const AIArchitectureDiagram = () => {
+  const [selectedPhase, setSelectedPhase] = useState(null);
+
+  const phases = [
+    {
+      id: 'input',
+      title: 'Input Layer',
+      icon: FileText,
+      color: 'bg-blue-500',
+      description: 'User provides data in various formats',
+      details: [
+        'Text: Natural language, code, documents',
+        'Images: Photos, diagrams, screenshots',
+        'Audio: Speech, music, sounds',
+        'Video: Clips, streams',
+        'Structured: JSON, CSV, databases'
+      ]
+    },
+    {
+      id: 'preprocessing',
+      title: 'Preprocessing',
+      icon: Zap,
+      color: 'bg-purple-500',
+      description: 'Raw data is cleaned and converted',
+      details: [
+        'Tokenization: Break text into tokens/words',
+        'Normalization: Standardize format & scale',
+        'Encoding: Convert to numerical vectors',
+        'Augmentation: Generate variations',
+        'Embedding: Map to high-dimensional space'
+      ]
+    },
+    {
+      id: 'model',
+      title: 'Model Architecture',
+      icon: Brain,
+      color: 'bg-green-500',
+      description: 'Neural network processes the data',
+      details: [
+        'Input Layer: Receives encoded data',
+        'Hidden Layers: Deep transformations',
+        'Attention Mechanism: Focus on relevant parts',
+        'Feed-Forward Networks: Process information',
+        'Output Layer: Generate predictions'
+      ]
+    },
+    {
+      id: 'computation',
+      title: 'Computation',
+      icon: Cpu,
+      color: 'bg-orange-500',
+      description: 'Hardware executes calculations',
+      details: [
+        'Matrix Multiplications: Core operations',
+        'Activation Functions: Non-linear transforms',
+        'Gradient Calculations: During training',
+        'Parallel Processing: GPU/TPU acceleration',
+        'Memory Management: Efficient data handling'
+      ]
+    },
+    {
+      id: 'storage',
+      title: 'Data Storage',
+      icon: Database,
+      color: 'bg-red-500',
+      description: 'Various storage systems used',
+      details: [
+        'Model Weights: Parameters stored on disk',
+        'Cache: Frequently used computations',
+        'Context: Conversation history (temporary)',
+        'Training Data: Stored in data lakes',
+        'Checkpoints: Model snapshots saved'
+      ]
+    },
+    {
+      id: 'output',
+      title: 'Output Generation',
+      icon: MessageSquare,
+      color: 'bg-indigo-500',
+      description: 'Model produces final results',
+      details: [
+        'Token Generation: Predict next element',
+        'Decoding: Convert vectors to readable form',
+        'Post-processing: Format and clean output',
+        'Ranking: Select best responses',
+        'Streaming: Send results incrementally'
+      ]
+    }
+  ];
+
+  return (
+    <div className="w-full h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-8 overflow-auto">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold text-white mb-2 text-center">
+          AI System Architecture & Data Flow
+        </h1>
+        <p className="text-gray-400 text-center mb-8">
+          Click on any phase to see detailed information
+        </p>
+
+        {/* Main Flow Diagram */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {phases.map((phase, index) => {
+            const Icon = phase.icon;
+            const isSelected = selectedPhase === phase.id;
+            
+            return (
+              <div key={phase.id} className="relative">
+                <div
+                  onClick={() => setSelectedPhase(phase.id)}
+                  className={`${phase.color} ${isSelected ? 'ring-4 ring-yellow-400' : ''} 
+                    rounded-lg p-6 cursor-pointer transform transition-all hover:scale-105 
+                    hover:shadow-2xl shadow-lg`}
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <Icon className="w-8 h-8 text-white" />
+                    <h3 className="text-xl font-bold text-white">{phase.title}</h3>
+                  </div>
+                  <p className="text-white text-sm opacity-90">{phase.description}</p>
+                </div>
+                
+                {index < phases.length - 1 && (
+                  <div className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
+                    <ArrowRight className="w-6 h-6 text-yellow-400" />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Detailed Information Panel */}
+        {selectedPhase && (
+          <div className="bg-gray-800 rounded-lg p-6 border-2 border-yellow-400 shadow-2xl">
+            <h2 className="text-2xl font-bold text-white mb-4">
+              {phases.find(p => p.id === selectedPhase)?.title} - Details
+            </h2>
+            <ul className="space-y-3">
+              {phases.find(p => p.id === selectedPhase)?.details.map((detail, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-gray-200">
+                  <span className="text-yellow-400 font-bold">•</span>
+                  <span>{detail}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Memory Hierarchy */}
+        <div className="mt-8 bg-gray-800 rounded-lg p-6 shadow-lg">
+          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+            <HardDrive className="w-6 h-6 text-cyan-400" />
+            Memory Hierarchy (Fastest → Slowest)
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-gradient-to-br from-cyan-600 to-cyan-700 rounded p-4">
+              <h3 className="font-bold text-white mb-2">GPU/TPU Registers</h3>
+              <p className="text-sm text-cyan-100">Active computation</p>
+              <p className="text-xs text-cyan-200 mt-2">Fastest, smallest capacity</p>
+            </div>
+            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded p-4">
+              <h3 className="font-bold text-white mb-2">GPU/TPU Memory</h3>
+              <p className="text-sm text-blue-100">Model weights during inference</p>
+              <p className="text-xs text-blue-200 mt-2">Very fast, limited size</p>
+            </div>
+            <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 rounded p-4">
+              <h3 className="font-bold text-white mb-2">System RAM</h3>
+              <p className="text-sm text-indigo-100">Temporary data & buffers</p>
+              <p className="text-xs text-indigo-200 mt-2">Fast, moderate size</p>
+            </div>
+            <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded p-4">
+              <h3 className="font-bold text-white mb-2">Disk/SSD Storage</h3>
+              <p className="text-sm text-purple-100">Saved models & datasets</p>
+              <p className="text-xs text-purple-200 mt-2">Slower, large capacity</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Training vs Inference */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gradient-to-br from-green-700 to-green-800 rounded-lg p-6 shadow-lg">
+            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+              <Layers className="w-6 h-6" />
+              Training Process
+            </h2>
+            <ol className="space-y-2 text-green-100">
+              <li className="flex gap-2"><span className="font-bold">1.</span> Load training data in batches</li>
+              <li className="flex gap-2"><span className="font-bold">2.</span> Forward pass: compute predictions</li>
+              <li className="flex gap-2"><span className="font-bold">3.</span> Calculate loss (error)</li>
+              <li className="flex gap-2"><span className="font-bold">4.</span> Backward pass: compute gradients</li>
+              <li className="flex gap-2"><span className="font-bold">5.</span> Update weights using optimizer</li>
+              <li className="flex gap-2"><span className="font-bold">6.</span> Repeat for millions of iterations</li>
+              <li className="flex gap-2"><span className="font-bold">7.</span> Save model checkpoints</li>
+            </ol>
+          </div>
+
+          <div className="bg-gradient-to-br from-blue-700 to-blue-800 rounded-lg p-6 shadow-lg">
+            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+              <Cloud className="w-6 h-6" />
+              Inference Process
+            </h2>
+            <ol className="space-y-2 text-blue-100">
+              <li className="flex gap-2"><span className="font-bold">1.</span> Load trained model weights</li>
+              <li className="flex gap-2"><span className="font-bold">2.</span> Receive user input</li>
+              <li className="flex gap-2"><span className="font-bold">3.</span> Preprocess & encode input</li>
+              <li className="flex gap-2"><span className="font-bold">4.</span> Forward pass through network</li>
+              <li className="flex gap-2"><span className="font-bold">5.</span> Generate output (token by token)</li>
+              <li className="flex gap-2"><span className="font-bold">6.</span> Decode & format response</li>
+              <li className="flex gap-2"><span className="font-bold">7.</span> Return result to user</li>
+            </ol>
+          </div>
+        </div>
+
+        {/* Data Types Supported */}
+        <div className="mt-8 bg-gray-800 rounded-lg p-6 shadow-lg">
+          <h2 className="text-2xl font-bold text-white mb-4">Input Data Types Supported</h2>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {[
+              { icon: FileText, label: 'Text', examples: 'Articles, code, chat' },
+              { icon: Image, label: 'Images', examples: 'Photos, diagrams' },
+              { icon: Mic, label: 'Audio', examples: 'Speech, music' },
+              { icon: MessageSquare, label: 'Video', examples: 'Clips, streams' },
+              { icon: Database, label: 'Structured', examples: 'JSON, CSV, SQL' }
+            ].map(item => {
+              const Icon = item.icon;
+              return (
+                <div key={item.label} className="bg-gray-700 rounded p-4 text-center">
+                  <Icon className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
+                  <h3 className="font-bold text-white mb-1">{item.label}</h3>
+                  <p className="text-xs text-gray-300">{item.examples}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AIArchitectureDiagram;
