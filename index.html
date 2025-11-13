@@ -1,244 +1,453 @@
-import React, { useState } from 'react';
-import { Database, Cpu, Zap, Brain, FileText, Image, Mic, MessageSquare, ArrowRight, Layers, HardDrive, Cloud } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI System Architecture & Data Flow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-const AIArchitectureDiagram = () => {
-  const [selectedPhase, setSelectedPhase] = useState(null);
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
 
-  const phases = [
-    {
-      id: 'input',
-      title: 'Input Layer',
-      icon: FileText,
-      color: 'bg-blue-500',
-      description: 'User provides data in various formats',
-      details: [
-        'Text: Natural language, code, documents',
-        'Images: Photos, diagrams, screenshots',
-        'Audio: Speech, music, sounds',
-        'Video: Clips, streams',
-        'Structured: JSON, CSV, databases'
-      ]
-    },
-    {
-      id: 'preprocessing',
-      title: 'Preprocessing',
-      icon: Zap,
-      color: 'bg-purple-500',
-      description: 'Raw data is cleaned and converted',
-      details: [
-        'Tokenization: Break text into tokens/words',
-        'Normalization: Standardize format & scale',
-        'Encoding: Convert to numerical vectors',
-        'Augmentation: Generate variations',
-        'Embedding: Map to high-dimensional space'
-      ]
-    },
-    {
-      id: 'model',
-      title: 'Model Architecture',
-      icon: Brain,
-      color: 'bg-green-500',
-      description: 'Neural network processes the data',
-      details: [
-        'Input Layer: Receives encoded data',
-        'Hidden Layers: Deep transformations',
-        'Attention Mechanism: Focus on relevant parts',
-        'Feed-Forward Networks: Process information',
-        'Output Layer: Generate predictions'
-      ]
-    },
-    {
-      id: 'computation',
-      title: 'Computation',
-      icon: Cpu,
-      color: 'bg-orange-500',
-      description: 'Hardware executes calculations',
-      details: [
-        'Matrix Multiplications: Core operations',
-        'Activation Functions: Non-linear transforms',
-        'Gradient Calculations: During training',
-        'Parallel Processing: GPU/TPU acceleration',
-        'Memory Management: Efficient data handling'
-      ]
-    },
-    {
-      id: 'storage',
-      title: 'Data Storage',
-      icon: Database,
-      color: 'bg-red-500',
-      description: 'Various storage systems used',
-      details: [
-        'Model Weights: Parameters stored on disk',
-        'Cache: Frequently used computations',
-        'Context: Conversation history (temporary)',
-        'Training Data: Stored in data lakes',
-        'Checkpoints: Model snapshots saved'
-      ]
-    },
-    {
-      id: 'output',
-      title: 'Output Generation',
-      icon: MessageSquare,
-      color: 'bg-indigo-500',
-      description: 'Model produces final results',
-      details: [
-        'Token Generation: Predict next element',
-        'Decoding: Convert vectors to readable form',
-        'Post-processing: Format and clean output',
-        'Ranking: Select best responses',
-        'Streaming: Send results incrementally'
-      ]
-    }
-  ];
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-  return (
-    <div className="w-full h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-8 overflow-auto">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-white mb-2 text-center">
-          AI System Architecture & Data Flow
-        </h1>
-        <p className="text-gray-400 text-center mb-8">
-          Click on any phase to see detailed information
-        </p>
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
 
-        {/* Main Flow Diagram */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {phases.map((phase, index) => {
-            const Icon = phase.icon;
-            const isSelected = selectedPhase === phase.id;
-            
-            return (
-              <div key={phase.id} className="relative">
-                <div
-                  onClick={() => setSelectedPhase(phase.id)}
-                  className={`${phase.color} ${isSelected ? 'ring-4 ring-yellow-400' : ''} 
-                    rounded-lg p-6 cursor-pointer transform transition-all hover:scale-105 
-                    hover:shadow-2xl shadow-lg`}
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <Icon className="w-8 h-8 text-white" />
-                    <h3 className="text-xl font-bold text-white">{phase.title}</h3>
-                  </div>
-                  <p className="text-white text-sm opacity-90">{phase.description}</p>
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 40px;
+        }
+
+        .phases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .phase-card {
+            padding: 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .phase-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.5);
+        }
+
+        .phase-card.selected {
+            ring: 4px solid #ffd700;
+            border: 3px solid #ffd700;
+        }
+
+        .phase-card.input { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .phase-card.preprocessing { background: linear-gradient(135deg, #a855f7, #9333ea); }
+        .phase-card.model { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .phase-card.computation { background: linear-gradient(135deg, #f97316, #ea580c); }
+        .phase-card.storage { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .phase-card.output { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+
+        .phase-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .phase-desc {
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+
+        .details-panel {
+            background: rgba(31, 41, 55, 0.95);
+            border: 3px solid #ffd700;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            display: none;
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .details-panel.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .details-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .details-list {
+            list-style: none;
+        }
+
+        .details-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            gap: 15px;
+        }
+
+        .details-list li:last-child {
+            border-bottom: none;
+        }
+
+        .bullet {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+
+        .section {
+            background: rgba(31, 41, 55, 0.8);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .memory-card {
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .memory-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .memory-card.gpu { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .memory-card.vram { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .memory-card.ram { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+        .memory-card.disk { background: linear-gradient(135deg, #a855f7, #9333ea); }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .process-card {
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .process-card.training { background: linear-gradient(135deg, #15803d, #16a34a); }
+        .process-card.inference { background: linear-gradient(135deg, #1e40af, #3b82f6); }
+
+        .process-card ol {
+            margin-top: 15px;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .process-card li {
+            padding: 8px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .step-number {
+            font-weight: bold;
+            min-width: 20px;
+        }
+
+        .data-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .data-type {
+            background: rgba(55, 65, 81, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .data-type-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .data-type-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .data-type-examples {
+            font-size: 0.85em;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI System Architecture & Data Flow</h1>
+        <p class="subtitle">Click on any phase to see detailed information</p>
+
+        <div class="phases-grid" id="phasesGrid"></div>
+
+        <div class="details-panel" id="detailsPanel">
+            <h2 class="details-title" id="detailsTitle"></h2>
+            <ul class="details-list" id="detailsList"></ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">⚡ Memory Hierarchy (Fastest → Slowest)</h2>
+            <div class="memory-grid">
+                <div class="memory-card gpu">
+                    <h3>GPU/TPU Registers</h3>
+                    <p>Active computation</p>
+                    <small style="opacity: 0.8;">Fastest, smallest capacity</small>
                 </div>
-                
-                {index < phases.length - 1 && (
-                  <div className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
-                    <ArrowRight className="w-6 h-6 text-yellow-400" />
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Detailed Information Panel */}
-        {selectedPhase && (
-          <div className="bg-gray-800 rounded-lg p-6 border-2 border-yellow-400 shadow-2xl">
-            <h2 className="text-2xl font-bold text-white mb-4">
-              {phases.find(p => p.id === selectedPhase)?.title} - Details
-            </h2>
-            <ul className="space-y-3">
-              {phases.find(p => p.id === selectedPhase)?.details.map((detail, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-gray-200">
-                  <span className="text-yellow-400 font-bold">•</span>
-                  <span>{detail}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Memory Hierarchy */}
-        <div className="mt-8 bg-gray-800 rounded-lg p-6 shadow-lg">
-          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            <HardDrive className="w-6 h-6 text-cyan-400" />
-            Memory Hierarchy (Fastest → Slowest)
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-gradient-to-br from-cyan-600 to-cyan-700 rounded p-4">
-              <h3 className="font-bold text-white mb-2">GPU/TPU Registers</h3>
-              <p className="text-sm text-cyan-100">Active computation</p>
-              <p className="text-xs text-cyan-200 mt-2">Fastest, smallest capacity</p>
-            </div>
-            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded p-4">
-              <h3 className="font-bold text-white mb-2">GPU/TPU Memory</h3>
-              <p className="text-sm text-blue-100">Model weights during inference</p>
-              <p className="text-xs text-blue-200 mt-2">Very fast, limited size</p>
-            </div>
-            <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 rounded p-4">
-              <h3 className="font-bold text-white mb-2">System RAM</h3>
-              <p className="text-sm text-indigo-100">Temporary data & buffers</p>
-              <p className="text-xs text-indigo-200 mt-2">Fast, moderate size</p>
-            </div>
-            <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded p-4">
-              <h3 className="font-bold text-white mb-2">Disk/SSD Storage</h3>
-              <p className="text-sm text-purple-100">Saved models & datasets</p>
-              <p className="text-xs text-purple-200 mt-2">Slower, large capacity</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Training vs Inference */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-green-700 to-green-800 rounded-lg p-6 shadow-lg">
-            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-              <Layers className="w-6 h-6" />
-              Training Process
-            </h2>
-            <ol className="space-y-2 text-green-100">
-              <li className="flex gap-2"><span className="font-bold">1.</span> Load training data in batches</li>
-              <li className="flex gap-2"><span className="font-bold">2.</span> Forward pass: compute predictions</li>
-              <li className="flex gap-2"><span className="font-bold">3.</span> Calculate loss (error)</li>
-              <li className="flex gap-2"><span className="font-bold">4.</span> Backward pass: compute gradients</li>
-              <li className="flex gap-2"><span className="font-bold">5.</span> Update weights using optimizer</li>
-              <li className="flex gap-2"><span className="font-bold">6.</span> Repeat for millions of iterations</li>
-              <li className="flex gap-2"><span className="font-bold">7.</span> Save model checkpoints</li>
-            </ol>
-          </div>
-
-          <div className="bg-gradient-to-br from-blue-700 to-blue-800 rounded-lg p-6 shadow-lg">
-            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-              <Cloud className="w-6 h-6" />
-              Inference Process
-            </h2>
-            <ol className="space-y-2 text-blue-100">
-              <li className="flex gap-2"><span className="font-bold">1.</span> Load trained model weights</li>
-              <li className="flex gap-2"><span className="font-bold">2.</span> Receive user input</li>
-              <li className="flex gap-2"><span className="font-bold">3.</span> Preprocess & encode input</li>
-              <li className="flex gap-2"><span className="font-bold">4.</span> Forward pass through network</li>
-              <li className="flex gap-2"><span className="font-bold">5.</span> Generate output (token by token)</li>
-              <li className="flex gap-2"><span className="font-bold">6.</span> Decode & format response</li>
-              <li className="flex gap-2"><span className="font-bold">7.</span> Return result to user</li>
-            </ol>
-          </div>
-        </div>
-
-        {/* Data Types Supported */}
-        <div className="mt-8 bg-gray-800 rounded-lg p-6 shadow-lg">
-          <h2 className="text-2xl font-bold text-white mb-4">Input Data Types Supported</h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {[
-              { icon: FileText, label: 'Text', examples: 'Articles, code, chat' },
-              { icon: Image, label: 'Images', examples: 'Photos, diagrams' },
-              { icon: Mic, label: 'Audio', examples: 'Speech, music' },
-              { icon: MessageSquare, label: 'Video', examples: 'Clips, streams' },
-              { icon: Database, label: 'Structured', examples: 'JSON, CSV, SQL' }
-            ].map(item => {
-              const Icon = item.icon;
-              return (
-                <div key={item.label} className="bg-gray-700 rounded p-4 text-center">
-                  <Icon className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
-                  <h3 className="font-bold text-white mb-1">{item.label}</h3>
-                  <p className="text-xs text-gray-300">{item.examples}</p>
+                <div class="memory-card vram">
+                    <h3>GPU/TPU Memory</h3>
+                    <p>Model weights during inference</p>
+                    <small style="opacity: 0.8;">Very fast, limited size</small>
                 </div>
-              );
-            })}
-          </div>
+                <div class="memory-card ram">
+                    <h3>System RAM</h3>
+                    <p>Temporary data & buffers</p>
+                    <small style="opacity: 0.8;">Fast, moderate size</small>
+                </div>
+                <div class="memory-card disk">
+                    <h3>Disk/SSD Storage</h3>
+                    <p>Saved models & datasets</p>
+                    <small style="opacity: 0.8;">Slower, large capacity</small>
+                </div>
+            </div>
         </div>
-      </div>
+
+        <div class="process-grid">
+            <div class="process-card training">
+                <h2 class="section-title">📚 Training Process</h2>
+                <ol>
+                    <li><span class="step-number">1.</span> Load training data in batches</li>
+                    <li><span class="step-number">2.</span> Forward pass: compute predictions</li>
+                    <li><span class="step-number">3.</span> Calculate loss (error)</li>
+                    <li><span class="step-number">4.</span> Backward pass: compute gradients</li>
+                    <li><span class="step-number">5.</span> Update weights using optimizer</li>
+                    <li><span class="step-number">6.</span> Repeat for millions of iterations</li>
+                    <li><span class="step-number">7.</span> Save model checkpoints</li>
+                </ol>
+            </div>
+
+            <div class="process-card inference">
+                <h2 class="section-title">🚀 Inference Process</h2>
+                <ol>
+                    <li><span class="step-number">1.</span> Load trained model weights</li>
+                    <li><span class="step-number">2.</span> Receive user input</li>
+                    <li><span class="step-number">3.</span> Preprocess & encode input</li>
+                    <li><span class="step-number">4.</span> Forward pass through network</li>
+                    <li><span class="step-number">5.</span> Generate output (token by token)</li>
+                    <li><span class="step-number">6.</span> Decode & format response</li>
+                    <li><span class="step-number">7.</span> Return result to user</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">📊 Input Data Types Supported</h2>
+            <div class="data-types">
+                <div class="data-type">
+                    <div class="data-type-icon">📄</div>
+                    <div class="data-type-label">Text</div>
+                    <div class="data-type-examples">Articles, code, chat</div>
+                </div>
+                <div class="data-type">
+                    <div class="data-type-icon">🖼️</div>
+                    <div class="data-type-label">Images</div>
+                    <div class="data-type-examples">Photos, diagrams</div>
+                </div>
+                <div class="data-type">
+                    <div class="data-type-icon">🎤</div>
+                    <div class="data-type-label">Audio</div>
+                    <div class="data-type-examples">Speech, music</div>
+                </div>
+                <div class="data-type">
+                    <div class="data-type-icon">🎬</div>
+                    <div class="data-type-label">Video</div>
+                    <div class="data-type-examples">Clips, streams</div>
+                </div>
+                <div class="data-type">
+                    <div class="data-type-icon">🗄️</div>
+                    <div class="data-type-label">Structured</div>
+                    <div class="data-type-examples">JSON, CSV, SQL</div>
+                </div>
+            </div>
+        </div>
     </div>
-  );
-};
 
-export default AIArchitectureDiagram;
+    <script>
+        const phases = [
+            {
+                id: 'input',
+                title: 'Input Layer',
+                description: 'User provides data in various formats',
+                details: [
+                    'Text: Natural language, code, documents',
+                    'Images: Photos, diagrams, screenshots',
+                    'Audio: Speech, music, sounds',
+                    'Video: Clips, streams',
+                    'Structured: JSON, CSV, databases'
+                ]
+            },
+            {
+                id: 'preprocessing',
+                title: 'Preprocessing',
+                description: 'Raw data is cleaned and converted',
+                details: [
+                    'Tokenization: Break text into tokens/words',
+                    'Normalization: Standardize format & scale',
+                    'Encoding: Convert to numerical vectors',
+                    'Augmentation: Generate variations',
+                    'Embedding: Map to high-dimensional space'
+                ]
+            },
+            {
+                id: 'model',
+                title: 'Model Architecture',
+                description: 'Neural network processes the data',
+                details: [
+                    'Input Layer: Receives encoded data',
+                    'Hidden Layers: Deep transformations',
+                    'Attention Mechanism: Focus on relevant parts',
+                    'Feed-Forward Networks: Process information',
+                    'Output Layer: Generate predictions'
+                ]
+            },
+            {
+                id: 'computation',
+                title: 'Computation',
+                description: 'Hardware executes calculations',
+                details: [
+                    'Matrix Multiplications: Core operations',
+                    'Activation Functions: Non-linear transforms',
+                    'Gradient Calculations: During training',
+                    'Parallel Processing: GPU/TPU acceleration',
+                    'Memory Management: Efficient data handling'
+                ]
+            },
+            {
+                id: 'storage',
+                title: 'Data Storage',
+                description: 'Various storage systems used',
+                details: [
+                    'Model Weights: Parameters stored on disk',
+                    'Cache: Frequently used computations',
+                    'Context: Conversation history (temporary)',
+                    'Training Data: Stored in data lakes',
+                    'Checkpoints: Model snapshots saved'
+                ]
+            },
+            {
+                id: 'output',
+                title: 'Output Generation',
+                description: 'Model produces final results',
+                details: [
+                    'Token Generation: Predict next element',
+                    'Decoding: Convert vectors to readable form',
+                    'Post-processing: Format and clean output',
+                    'Ranking: Select best responses',
+                    'Streaming: Send results incrementally'
+                ]
+            }
+        ];
+
+        const phasesGrid = document.getElementById('phasesGrid');
+        const detailsPanel = document.getElementById('detailsPanel');
+        const detailsTitle = document.getElementById('detailsTitle');
+        const detailsList = document.getElementById('detailsList');
+
+        let selectedPhase = null;
+
+        // Create phase cards
+        phases.forEach(phase => {
+            const card = document.createElement('div');
+            card.className = `phase-card ${phase.id}`;
+            card.innerHTML = `
+                <div class="phase-title">${phase.title}</div>
+                <div class="phase-desc">${phase.description}</div>
+            `;
+            card.addEventListener('click', () => selectPhase(phase.id));
+            phasesGrid.appendChild(card);
+        });
+
+        function selectPhase(phaseId) {
+            const phase = phases.find(p => p.id === phaseId);
+            
+            // Remove previous selection
+            document.querySelectorAll('.phase-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selection to clicked card
+            const selectedCard = document.querySelector(`.phase-card.${phaseId}`);
+            selectedCard.classList.add('selected');
+
+            // Update details panel
+            detailsTitle.textContent = `${phase.title} - Details`;
+            detailsList.innerHTML = '';
+            
+            phase.details.forEach(detail => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span class="bullet">•</span><span>${detail}</span>`;
+                detailsList.appendChild(li);
+            });
+
+            detailsPanel.classList.add('active');
+            detailsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
